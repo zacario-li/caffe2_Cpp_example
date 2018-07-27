@@ -1,6 +1,6 @@
 # caffe2_Cpp_example  
 c++ caffe2 example  
-Usage:  
+**Usage:**  
 cd 'project root dir'  
 mkdir build  
 #copy res dir into build  
