@@ -1,3 +1,5 @@
+
+
 #include <utils.h>
 
 CAFFE2_DEFINE_string(init_net, "res/squeezenet_init_net.pb","the given path to the init protobuffer.")
@@ -5,7 +7,6 @@ CAFFE2_DEFINE_string(predict_net,"res/squeezenet_predict_net.pb","predict protob
 CAFFE2_DEFINE_string(file,"res/test.jpg","input image file");
 CAFFE2_DEFINE_string(classes,"res/imagenet_classes.txt","the classes file.");
 CAFFE2_DEFINE_int(size,227,"the image file.")
-
 
 
 namespace caffe2{

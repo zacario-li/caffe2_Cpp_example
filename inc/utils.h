@@ -18,6 +18,8 @@
 
 namespace caffe2{
     void print(const Blob* blob, const std::string& name);
+    void caffe2_1st_run();
+    void caffe2_pretrained_run();
 }
 
 #endif //CAFFE2_CPP_TEST_UTILS_H
