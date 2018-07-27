@@ -19,10 +19,10 @@ CAFFE2_DEFINE_int(size,227,"the image file.")
 
 namespace caffe2{
 
-    void print(Blob* blob, const std::string& name){
-        auto tensor = blob->GetMutable<TensorCPU>();
-        const auto& data = tensor->data<float>();
-        std::cout<< name << "(" << tensor->dims() << "):" <<std::vector<float>(data,data+tensor->size()) << std::endl;
+    void print(const Blob* blob, const std::string& name){
+        auto tensor = blob->GetMutable<TensorCPU>().Clone();
+        const auto& data = tensor.data<float>();
+        std::cout<< name << "(" << tensor.dims() << "):" <<std::vector<float>(data,data+tensor.size()) << std::endl;
     }
 
     void caffe2_1st_run(){
