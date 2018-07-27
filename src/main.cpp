@@ -1,13 +1,4 @@
-#include <iostream>
-#include <caffe2/core/init.h>
-#include <caffe2/core/operator.h>
-#include <caffe2/core/operator_gradient.h>
-
-#include <caffe2/core/net.h>
-#include <caffe2/utils/proto_utils.h>
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <utils.h>
 
 CAFFE2_DEFINE_string(init_net, "res/squeezenet_init_net.pb","the given path to the init protobuffer.")
 CAFFE2_DEFINE_string(predict_net,"res/squeezenet_predict_net.pb","predict protobuffer");
