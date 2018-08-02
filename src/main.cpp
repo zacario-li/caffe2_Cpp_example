@@ -1,23 +1,21 @@
-
-
 #include <utils.h>
 
-CAFFE2_DEFINE_string(init_net, "res/squeezenet_init_net.pb","the given path to the init protobuffer.")
-CAFFE2_DEFINE_string(predict_net,"res/squeezenet_predict_net.pb","predict protobuffer");
-CAFFE2_DEFINE_string(file,"res/test.jpg","input image file");
-CAFFE2_DEFINE_string(classes,"res/imagenet_classes.txt","the classes file.");
-CAFFE2_DEFINE_int(size,227,"the image file.")
+CAFFE2_DEFINE_string(init_net, "res/squeezenet_init_net.pb", "the given path to the init protobuffer.")
+CAFFE2_DEFINE_string(predict_net, "res/squeezenet_predict_net.pb", "predict protobuffer");
+CAFFE2_DEFINE_string(file, "res/test.jpg", "input image file");
+CAFFE2_DEFINE_string(classes, "res/imagenet_classes.txt", "the classes file.");
+CAFFE2_DEFINE_int(size, 227, "the image file.")
 
+namespace caffe2 {
 
-namespace caffe2{
-
-    void print(const Blob* blob, const std::string& name){
+    void print(const Blob *blob, const std::string &name) {
         const auto tensor = blob->Get<TensorCUDA>().Clone();
-        const auto& data = tensor.data<float>();
-        std::cout<< name << "(" << tensor.dims() << "):" <<std::vector<float>(data,data+tensor.size()) << std::endl;
+        const auto &data = tensor.data<float>();
+        std::cout << name << "(" << tensor.dims() << "):" << std::vector<float>(data, data + tensor.size())
+                  << std::endl;
     }
 
-    TensorCPU prepareMatImgData(cv::Mat& image){
+    TensorCPU prepareMatImgData(cv::Mat &image) {
         cv::Size scale(std::max(FLAGS_size * image.cols / image.rows, FLAGS_size),
                        std::max(FLAGS_size, FLAGS_size * image.rows / image.cols));
         cv::resize(image, image, scale);
@@ -36,24 +34,24 @@ namespace caffe2{
             data.insert(data.end(), (float *) c.datastart, (float *) c.dataend);
         }
         std::vector<TIndex> dims({1, image.channels(), image.rows, image.cols});
-        TensorCPU tensor_host =TensorCPU(dims, data, NULL);
+        TensorCPU tensor_host = TensorCPU(dims, data, NULL);
         return tensor_host;
     }
 
-    void caffe2_pretrained_run(){
-        if(!std::ifstream(FLAGS_init_net).good() ||
-           !std::ifstream(FLAGS_predict_net).good()){
+    void caffe2_pretrained_run() {
+        if (!std::ifstream(FLAGS_init_net).good() ||
+            !std::ifstream(FLAGS_predict_net).good()) {
             std::cerr << "model file missiong" << std::endl;
             return;
         }
 
-        if(!std::ifstream(FLAGS_file).good()){
-            std::cerr<<"error, image missing"<<std::endl;
+        if (!std::ifstream(FLAGS_file).good()) {
+            std::cerr << "error, image missing" << std::endl;
             return;
         }
 
-        std::cout<<"start ..."<<std::endl;
-        std::cout<<"init net ..." <<std::endl;
+        std::cout << "start ..." << std::endl;
+        std::cout << "init net ..." << std::endl;
 
         //try gpu
         DeviceOption option;
@@ -61,40 +59,38 @@ namespace caffe2{
         new CUDAContext(option);
 
         NetDef init_net, predict_net;
-        CAFFE_ENFORCE(ReadProtoFromFile(FLAGS_init_net,&init_net));
-        CAFFE_ENFORCE(ReadProtoFromFile(FLAGS_predict_net,&predict_net));
+        CAFFE_ENFORCE(ReadProtoFromFile(FLAGS_init_net, &init_net));
+        CAFFE_ENFORCE(ReadProtoFromFile(FLAGS_predict_net, &predict_net));
 
         //transfer net to gpu
         init_net.mutable_device_option()->set_device_type(CUDA);
         predict_net.mutable_device_option()->set_device_type(CUDA);
 
-
         Workspace workspace("tmp");
         CAFFE_ENFORCE(workspace.RunNetOnce(init_net));
         auto input = workspace.CreateBlob("data")->GetMutable<TensorCUDA>();
 
-        std::cout<<"load classes..." << std::endl;
+        std::cout << "load classes..." << std::endl;
 
         std::ifstream file(FLAGS_classes);
         std::string temp;
         std::vector<std::string> classes;
-        while(std::getline(file,temp)){
+        while (std::getline(file, temp)) {
             classes.push_back(temp);
         }
 
-        std::cout<<"init net done ..." <<std::endl;
+        std::cout << "init net done ..." << std::endl;
 
-        std::cout<<"init camera ..." << std::endl;
+        std::cout << "init camera ..." << std::endl;
         cv::VideoCapture cap("res/fruits.mp4");
         /*if(!cap.isOpened()){
             std::cout<<"camera open failed..."<<std::endl;
             return;
         }*/
-        std::cout<<"camera done..." <<std::endl;
+        std::cout << "camera done..." << std::endl;
         cv::Mat o_image;
-        auto& image = o_image ;//= cv::imread(FLAGS_file);
-        for(int i = 0; i < 10000; i++)
-        {
+        auto &image = o_image;//= cv::imread(FLAGS_file);
+        for (int i = 0; i < 10000; i++) {
             auto cap_result = cap.read(image);
             auto show_image = image.clone();
             std::cout << "cap result is:" << cap_result << std::endl;
@@ -124,14 +120,14 @@ namespace caffe2{
             for (auto pair:pairs) {
                 std::cout << " " << pair.first << "% " << classes[pair.second] << std::endl;
             }
-            cv::imshow("test",show_image);
+            cv::imshow("test", show_image);
             cv::waitKey(1);
         }
     }
 }//namespace caffe2_first
 
-int main(int argc, char** argv){
-    caffe2::GlobalInit(&argc,&argv);
+int main(int argc, char **argv) {
+    caffe2::GlobalInit(&argc, &argv);
     caffe2::caffe2_pretrained_run();
     google::protobuf::ShutdownProtobufLibrary();
     return 0;
