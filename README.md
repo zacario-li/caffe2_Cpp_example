@@ -2,8 +2,7 @@
 c++ caffe2 example  
 ## **Usage:**  
 cd 'project root dir'  
-mkdir build  
-#copy res dir into build  
+mkdir build
 cd build  
 cmake ..  
 make  
