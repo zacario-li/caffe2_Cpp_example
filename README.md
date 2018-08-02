@@ -11,8 +11,8 @@ make
   
 ## **Project description**  
 use caffe2 c++ api to load pretrained model.   
-I use a mp4 file to test squeeznet with CPU.  
-Next step, I will try to modify it running with CUDA  
+I use a mp4 file to test squeeznet with CUDA.  
+Next step, I will try to modify this code running with opencl.    
   
 ## Notice:   
 Build caffe2 with opencv which already installed on your system(mine is ubuntu 16.04)  

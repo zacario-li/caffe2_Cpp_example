@@ -9,6 +9,7 @@
 #include <caffe2/core/init.h>
 #include <caffe2/core/operator.h>
 #include <caffe2/core/operator_gradient.h>
+#include <caffe2/core/context_gpu.h>
 
 #include <caffe2/core/net.h>
 #include <caffe2/utils/proto_utils.h>
@@ -18,8 +19,8 @@
 
 namespace caffe2{
     void print(const Blob* blob, const std::string& name);
-    void caffe2_1st_run();
     void caffe2_pretrained_run();
+    TensorCPU prepareMatImgData(cv::Mat& img);
 }
 
 #endif //CAFFE2_CPP_TEST_UTILS_H
