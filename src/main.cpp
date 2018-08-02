@@ -99,28 +99,10 @@ namespace caffe2{
             auto show_image = image.clone();
             std::cout << "cap result is:" << cap_result << std::endl;
             std::cout << "image size:" << image.size() << std::endl;
+
             TensorCPU tensor_host = prepareMatImgData(image);
-            /*cv::Size scale(std::max(FLAGS_size * image.cols / image.rows, FLAGS_size),
-                           std::max(FLAGS_size, FLAGS_size * image.rows / image.cols));
-            cv::resize(image, image, scale);
-            std::cout << "scaled size:" << image.size() << std::endl;
-
-            cv::Rect crop((image.cols - FLAGS_size) / 2, (image.rows - FLAGS_size) / 2, FLAGS_size, FLAGS_size);
-            image = image(crop);
-            std::cout << "cropped size:" << image.size() << std::endl;
-
-            image.convertTo(image, CV_32FC3, 1.0, -128);
-
-            vector<cv::Mat> channels(3);
-            cv::split(image, channels);
-            std::vector<float> data;
-            for (auto &c :channels) {
-                data.insert(data.end(), (float *) c.datastart, (float *) c.dataend);
-            }
-            std::vector<TIndex> dims({1, image.channels(), image.rows, image.cols});
-            TensorCPU tensor_host =TensorCPU(dims, data, NULL);*/
-
             input->CopyFrom(tensor_host);
+
             CAFFE_ENFORCE(workspace.RunNetOnce(predict_net));
 
             auto &output_name = predict_net.external_output(0);
