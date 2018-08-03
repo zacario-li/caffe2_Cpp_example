@@ -6,8 +6,9 @@ mkdir build
 cd build  
 cmake ..  
 make  
-'run and have fun'  
-  
+'run and have fun'
+*******************************************
+
 ## **Project description**  
 use caffe2 c++ api to load pretrained model.   
 I use a mp4 file to test squeeznet with CUDA.  

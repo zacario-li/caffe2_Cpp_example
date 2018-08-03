@@ -54,21 +54,30 @@ namespace caffe2 {
         std::cout << "init net ..." << std::endl;
 
         //try gpu
+        auto bflag = HasCudaGPU();
+        bflag = HasCudaRuntime();
+#ifdef __GPU__
         DeviceOption option;
         option.set_device_type(CUDA);
         new CUDAContext(option);
+#endif
 
         NetDef init_net, predict_net;
         CAFFE_ENFORCE(ReadProtoFromFile(FLAGS_init_net, &init_net));
         CAFFE_ENFORCE(ReadProtoFromFile(FLAGS_predict_net, &predict_net));
 
         //transfer net to gpu
+#ifdef __GPU__
         init_net.mutable_device_option()->set_device_type(CUDA);
         predict_net.mutable_device_option()->set_device_type(CUDA);
-
+#endif
         Workspace workspace("tmp");
         CAFFE_ENFORCE(workspace.RunNetOnce(init_net));
+#ifdef __GPU__
         auto input = workspace.CreateBlob("data")->GetMutable<TensorCUDA>();
+#else
+        auto input = workspace.CreateBlob("data")->GetMutable<TensorCPU>();
+#endif
 
         std::cout << "load classes..." << std::endl;
 
@@ -102,9 +111,17 @@ namespace caffe2 {
             CAFFE_ENFORCE(workspace.RunNetOnce(predict_net));
 
             auto &output_name = predict_net.external_output(0);
+#ifdef __GPU__
             auto output_device = workspace.GetBlob(output_name)->Get<TensorCUDA>().Clone();
+#else
+            auto output_device = workspace.GetBlob(output_name)->Get<TensorCPU>().Clone();
+#endif
             //transfer GPU tensor to CPU tensor, must do it, or it will crash
+#ifdef __GPU__
             auto output = TensorCPU(output_device);
+#else
+            auto &output = output_device;
+#endif
             const auto &probs = output.data<float>();
             std::vector<std::pair<int, int>> pairs;
             for (auto i = 0; i < output.size(); i++) {
