@@ -1,8 +1,8 @@
 # caffe2_Cpp_example  
 c++ caffe2 example  
 ## **Usage:**  
-### ** notice **  before you compile this code, please double check your pytorch version, I use pytorch master tag v0.4.1, do not use the latest commit  
-
+### ** notice **  
+**before you compile this code, please double check your pytorch version, I use pytorch master tag v0.4.1, do not use the latest commit**   
 cd 'project root dir'  
 mkdir build  
 cd build  
